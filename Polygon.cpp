@@ -3,6 +3,14 @@
 #include <gl/glut.h>
 
 
+Polygon::Polygon(){
+	for(int i=0; i<pMx; ++i){
+		for(int j=0; j<pMy; ++j){
+			pMatrix[i][j] = 0;
+		}
+	}
+}
+
 Polygon::~Polygon(void)
 {
 	std::vector<Point>::iterator i;
@@ -45,8 +53,18 @@ void Polygon::draw(void){
 	glEnd();
 	*/
 
+	// отрисовка заливки
+	glBegin (GL_POINTS);
+	for(int i=0; i<pMx; ++i){
+		for(int j=0; j<pMy; ++j){
+			if(pMatrix[i][j] == 1){
+				glColor3f(0, 125, 0); 
+				glVertex2d(i, j);
+			}
+		}
+	}
+    glEnd ();
 	
-
 }
 
 
@@ -232,5 +250,42 @@ bool Polygon::is_Convex(void){
 			lines_is_right = false;
 		return true;
 	}
+}
 
+void Polygon::fill(int i){
+	if(i==1){
+		Line a = Line(50,900,50,50);
+		fillOnEdges(a);
+	}
+}
+
+
+void Polygon::fillOnEdges(Line line_in){
+	Line line_inner = line_in;
+	
+	if(line_inner.point_to.y < line_inner.point_from.y){
+		Point tmp;
+		tmp.x = line_inner.point_from.x;
+		tmp.y = line_inner.point_from.y;
+		line_inner.point_from.x = line_inner.point_to.x;
+		line_inner.point_from.y = line_inner.point_to.y;
+		line_inner.point_to.x = tmp.x;
+		line_inner.point_to.y = tmp.y;
+	}
+	
+	for(int y = line_inner.point_from.y; y <= line_inner.point_to.y; ++y){
+		Point z;
+		z.y = y;
+		z.x = intersect(y, line_inner);
+		for(int i = z.x; i < pMx; ++i){
+			if (pMatrix[i][(int)z.y] == 0)
+				pMatrix[i][(int)z.y] = 1;
+			else
+				pMatrix[i][(int)z.y] = 0;
+		}
+	}	
+}
+
+int Polygon::intersect(int y, Line poly){
+	return (poly.point_to.x - poly.point_from.x)*(y - poly.point_from.y) / (poly.point_to.y - poly.point_from.y) + poly.point_from.x;
 }

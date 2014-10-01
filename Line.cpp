@@ -1,11 +1,23 @@
 #include "Line.h"
 #include <GL\glut.h>
 
+Line::Line(int x1, int y1, int x2, int y2){
+	flag = 0;
+	point_from.x = x1;
+	point_from.y = y1;
+	point_to.x = x2;
+	point_to.y = y2;
+	flag_from = 0;
+	flag_to = 0;
+}
+
 Line::Line(void)
 {
 	flag = 0;
 	point_from.x = 0;
 	point_from.y = 0;
+	point_to.x = 0;
+	point_to.y = 0;
 	flag_from = 0;
 	flag_to = 0;
 }

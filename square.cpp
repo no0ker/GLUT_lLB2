@@ -256,3 +256,7 @@ void Square::add_flag_to_point(Line * line_in){
 		line_in->flag_to |= (1<<0);
 
 }
+
+void Square::fill(int i){
+	return;
+}

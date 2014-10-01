@@ -3,6 +3,7 @@
 class Line
 {
 public:
+	Line(int, int, int, int);
 	Line(void);
 	~Line(void);
 	void set_point(int x, int y);
