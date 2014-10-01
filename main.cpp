@@ -21,8 +21,7 @@ void display(void){
 	//line.draw();
 	parent->draw();
 	////////////////
-    
-	glFinish ();
+    glFinish ();	
 }
 
 /* Функция вызывается при изменении размеров окна */

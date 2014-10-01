@@ -1,5 +1,6 @@
 #include "Polygon.h"
 #include "Line.h"
+#include "windows.h"
 #include <gl/glut.h>
 
 
@@ -31,6 +32,8 @@ void Polygon::addPoint(double x, double y){
 }
 
 void Polygon::draw(void){
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(1,1,1,1);
 	
 	glBegin(GL_LINE_LOOP);
 		std::vector<Point>::iterator i;
@@ -253,7 +256,6 @@ bool Polygon::is_Convex(void){
 }
 
 void Polygon::fill(int i){
-	
 	if(i==1){
 		if(points.size()>=2){
 			Line l;
@@ -284,7 +286,7 @@ void Polygon::fillOnEdges(Line line_in){
 		line_inner.point_to.y = tmp.y;
 	}
 	
-	for(int y = line_inner.point_from.y; y <= line_inner.point_to.y; ++y){
+	for(int y = line_inner.point_from.y; y < line_inner.point_to.y; ++y){
 		Point z;
 		z.y = y;
 		z.x = intersect(y, line_inner);
@@ -294,9 +296,15 @@ void Polygon::fillOnEdges(Line line_in){
 			else
 				pMatrix[i][(int)z.y] = 0;
 		}
+		this->draw();
+		Sleep(5);
 	}	
 }
 
 int Polygon::intersect(int y, Line poly){
-	return (poly.point_to.x - poly.point_from.x)*(y - poly.point_from.y) / (poly.point_to.y - poly.point_from.y) + poly.point_from.x;
+	if(y == poly.point_from.y)
+		return poly.point_from.x;
+	if(y == poly.point_to.y)
+		return poly.point_to.x;
+	return (int)(poly.point_to.x - poly.point_from.x)*(y - poly.point_from.y) / (poly.point_to.y - poly.point_from.y) + poly.point_from.x;
 }
