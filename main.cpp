@@ -4,10 +4,12 @@
 #include "Polygon.h"
 #include "Line.h"
 #include "Square.h"
+#include "Point.h"
 #include "Parent.h"
 
 int window_width = 500;
 int window_height = 250;
+int a;
 
 Parent * parent;
 Line line;
@@ -52,8 +54,13 @@ void mouse(int button, int state, int ax, int ay){
 		parent->citio(&line);
 		*/
 		//FILL
-		int a = 1;
-		parent->fill(a);
+		Point tmp;
+		tmp.x = ax;
+		tmp.y = window_height - ay;
+		++a;
+		parent->fill(3, tmp);
+		if(a==3)
+			a=0;
 		display();
 	}
 }
@@ -61,7 +68,7 @@ void mouse(int button, int state, int ax, int ay){
 int main(int argc, char *argv[]){
 	setlocale(LC_ALL, "Russian");
 	parent = new Polygon;
-	
+	a=1;
 	glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB);
     glutInitWindowSize(window_width, window_height);

@@ -13,7 +13,7 @@ public:
 	virtual void addPoint(double x, double y);
 	virtual void draw(void);
 	virtual void citio(Line* line_in);
-	virtual void fill(int);
+	virtual void fill(int, Point);
 
 	std::vector<Point> points;
 	std::vector<Point> points_normal;
@@ -25,7 +25,8 @@ private:
 	int static const pMx = 1000;
 	int static const pMy = 1000;
 	char pMatrix[pMx][pMy];
-	void fillOnEdges(Line);
+	void fillOnEdges(Line, int);
 	int Polygon::intersect(int, Line);
+	int mid();
 };
 

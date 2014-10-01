@@ -2,6 +2,8 @@
 #include "Line.h"
 #include "windows.h"
 #include <gl/glut.h>
+#include <stack>
+
 
 
 Polygon::Polygon(){
@@ -255,25 +257,85 @@ bool Polygon::is_Convex(void){
 	}
 }
 
-void Polygon::fill(int i){
-	if(i==1){
+void Polygon::fill(int j, Point pin){
+	if(j==1 || j==2){
 		if(points.size()>=2){
 			Line l;
 			l.point_to = points[0];
 			for(int i = 1; i<points.size(); ++i){
 				l.point_from = l.point_to;
 				l.point_to = points[i];
-				fillOnEdges(l);
+				fillOnEdges(l, j);
 			}
 			l.point_from = l.point_to;
 			l.point_to = points[0];
-			fillOnEdges(l);
+			fillOnEdges(l, j);
 		}
+	}
+	if(j==3){
+		Line tmp;
+		tmp.point_to.x = points[0].x; 
+		tmp.point_to.y = points[0].y;
+		for(int i =0; i< points.size(); ++i){
+			tmp.point_from = tmp.point_to;
+			tmp.point_to.x = points[i].x;
+			tmp.point_to.y = points[i].y;
+			for(int i = min(tmp.point_from.y, tmp.point_to.y);
+				    i <= max(tmp.point_from.y, tmp.point_to.y);
+					++i){
+				int ix = intersect(i, tmp);
+				pMatrix[ix][i] = 1;
+			}
+		}
+		tmp.point_from = tmp.point_to;
+		tmp.point_to.x = points[0].x;
+		tmp.point_to.y = points[0].y;
+		for(int i = min(tmp.point_from.y, tmp.point_to.y);
+				    i <= max(tmp.point_from.y, tmp.point_to.y);
+					++i){
+			int ix = intersect(i, tmp);
+			pMatrix[ix][i] = 1;
+		}
+		std::stack<Point> allp;
+		allp.push(pin);
+		while(allp.size()>1){
+			Point tmp = allp.top();
+			allp.pop();
+			pMatrix[(int)tmp.x][(int)tmp.y]=1;
+			if(tmp.x>=1 && tmp.x <= 999 && tmp.y >=1 && tmp.y <= 999){
+				if(pMatrix[(int)tmp.x+1][(int)tmp.y] != 1){
+					Point a;
+					a.x = (int)tmp.x+1;
+					a.y = (int)tmp.y;
+					allp.push(a);
+				}
+				if(pMatrix[(int)tmp.x-1][(int)tmp.y] != 1){
+					Point a;
+					a.x = (int)tmp.x-1;
+					a.y = (int)tmp.y;
+					allp.push(a);
+				}
+				if(pMatrix[(int)tmp.x][(int)tmp.y+1] != 1){
+					Point a;
+					a.x = (int)tmp.x;
+					a.y = (int)tmp.y+1;
+					allp.push(a);
+				}
+				if(pMatrix[(int)tmp.x][(int)tmp.y-1] != 1){
+					Point a;
+					a.x = (int)tmp.x;
+					a.y = (int)tmp.y-1;
+					allp.push(a);
+				}
+			}
+		}
+		// заливка с затравкой.
+		this->draw();
 	}
 }
 
 
-void Polygon::fillOnEdges(Line line_in){
+void Polygon::fillOnEdges(Line line_in, int flag){
 	Line line_inner = line_in;
 	
 	if(line_inner.point_to.y < line_inner.point_from.y){
@@ -290,14 +352,25 @@ void Polygon::fillOnEdges(Line line_in){
 		Point z;
 		z.y = y;
 		z.x = intersect(y, line_inner);
-		for(int i = z.x; i < pMx; ++i){
+		int range;
+		if(flag==1)
+			range = pMx;
+		if(flag==2){
+			range = mid();
+			if(z.x > range){
+				int tmp = range;
+				range = z.x;
+				z.x = tmp;
+			}
+		}
+		for(int i = z.x; i < range; ++i){
 			if (pMatrix[i][(int)z.y] == 0)
 				pMatrix[i][(int)z.y] = 1;
 			else
 				pMatrix[i][(int)z.y] = 0;
 		}
 		this->draw();
-		Sleep(5);
+		Sleep(3);
 	}	
 }
 
@@ -307,4 +380,12 @@ int Polygon::intersect(int y, Line poly){
 	if(y == poly.point_to.y)
 		return poly.point_to.x;
 	return (int)(poly.point_to.x - poly.point_from.x)*(y - poly.point_from.y) / (poly.point_to.y - poly.point_from.y) + poly.point_from.x;
+}
+
+int Polygon::mid(){
+	int sum = 0;
+	for(int i=0; i<points.size(); ++i){
+		sum += points[i].x;
+	}
+	return sum / points.size();
 }
