@@ -253,9 +253,20 @@ bool Polygon::is_Convex(void){
 }
 
 void Polygon::fill(int i){
+	
 	if(i==1){
-		Line a = Line(50,900,50,50);
-		fillOnEdges(a);
+		if(points.size()>=2){
+			Line l;
+			l.point_to = points[0];
+			for(int i = 1; i<points.size(); ++i){
+				l.point_from = l.point_to;
+				l.point_to = points[i];
+				fillOnEdges(l);
+			}
+			l.point_from = l.point_to;
+			l.point_to = points[0];
+			fillOnEdges(l);
+		}
 	}
 }
 
