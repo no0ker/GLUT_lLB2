@@ -36,7 +36,7 @@ void Polygon::draw(void){
 	glBegin(GL_LINE_LOOP);
 		std::vector<Point>::iterator i;
 		for(i = points.begin(); i<points.end(); ++i){
-			glColor3f(1.0, 0.25, 0.0); 
+			glColor3f(1, 0.25, 0.0); 
 			glVertex2d(i->x, i->y);
 		}
 	glEnd();
@@ -59,7 +59,7 @@ void Polygon::draw(void){
 	for(int i=0; i<pMx; ++i){
 		for(int j=0; j<pMy; ++j){
 			if(pMatrix[i][j] == 1){
-				glColor3f(0, 125, 0); 
+				glColor3f(30, 50, 0); 
 				glVertex2d(i, j);
 			}
 		}
