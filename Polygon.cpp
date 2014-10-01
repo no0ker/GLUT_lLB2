@@ -7,11 +7,7 @@
 
 
 Polygon::Polygon(){
-	for(int i=0; i<pMx; ++i){
-		for(int j=0; j<pMy; ++j){
-			pMatrix[i][j] = 0;
-		}
-	}
+	clear();
 }
 
 Polygon::~Polygon(void)
@@ -259,6 +255,7 @@ bool Polygon::is_Convex(void){
 
 void Polygon::fill(int j, Point pin){
 	if(j==1 || j==2){
+		clear();
 		if(points.size()>=2){
 			Line l;
 			l.point_to = points[0];
@@ -271,8 +268,10 @@ void Polygon::fill(int j, Point pin){
 			l.point_to = points[0];
 			fillOnEdges(l, j);
 		}
+		this->draw();
 	}
 	if(j==3){
+		clear();
 		Line tmp;
 		tmp.point_to.x = points[0].x; 
 		tmp.point_to.y = points[0].y;
@@ -284,7 +283,13 @@ void Polygon::fill(int j, Point pin){
 				    i <= max(tmp.point_from.y, tmp.point_to.y);
 					++i){
 				int ix = intersect(i, tmp);
-				pMatrix[ix][i] = 1;
+				pMatrix[ix][i] = 1;		
+			}
+			for(int i = min(tmp.point_from.x, tmp.point_to.x);
+				    i <= max(tmp.point_from.x, tmp.point_to.x);
+					++i){
+				int iy = intersect_ox(i, tmp);
+				pMatrix[i][iy] = 1;		
 			}
 		}
 		tmp.point_from = tmp.point_to;
@@ -295,45 +300,51 @@ void Polygon::fill(int j, Point pin){
 					++i){
 			int ix = intersect(i, tmp);
 			pMatrix[ix][i] = 1;
+			
 		}
+		for(int i = min(tmp.point_from.x, tmp.point_to.x);
+				    i <= max(tmp.point_from.x, tmp.point_to.x);
+					++i){
+				int iy = intersect_ox(i, tmp);
+				pMatrix[i][iy] = 1;		
+			}
+		// конец обводки.
+		
+		// начало заливки с затравкой.
+
 		std::stack<Point> allp;
 		allp.push(pin);
-		while(allp.size()>1){
+		while (allp.size()>=1){
 			Point tmp = allp.top();
 			allp.pop();
-			pMatrix[(int)tmp.x][(int)tmp.y]=1;
-			if(tmp.x>=1 && tmp.x <= 999 && tmp.y >=1 && tmp.y <= 999){
-				if(pMatrix[(int)tmp.x+1][(int)tmp.y] != 1){
-					Point a;
-					a.x = (int)tmp.x+1;
-					a.y = (int)tmp.y;
+			pMatrix[(int)tmp.x][(int)tmp.y] = 1;
+			if(tmp.x >= 1 && tmp.y <=500 && tmp.x <= 500 && tmp.y >=1){
+				if(pMatrix[(int)tmp.x+1][(int)tmp.y]!=1){
+					Point a = tmp;
+					a.x += 1;
 					allp.push(a);
 				}
-				if(pMatrix[(int)tmp.x-1][(int)tmp.y] != 1){
-					Point a;
-					a.x = (int)tmp.x-1;
-					a.y = (int)tmp.y;
+				if(pMatrix[(int)tmp.x][(int)tmp.y+1]!=1){
+					Point a = tmp;
+					a.y += 1;
 					allp.push(a);
 				}
-				if(pMatrix[(int)tmp.x][(int)tmp.y+1] != 1){
-					Point a;
-					a.x = (int)tmp.x;
-					a.y = (int)tmp.y+1;
+				if(pMatrix[(int)tmp.x-1][(int)tmp.y]!=1){
+					Point a = tmp;
+					a.x -= 1;
 					allp.push(a);
 				}
-				if(pMatrix[(int)tmp.x][(int)tmp.y-1] != 1){
-					Point a;
-					a.x = (int)tmp.x;
-					a.y = (int)tmp.y-1;
+				if(pMatrix[(int)tmp.x][(int)tmp.y-1]!=1){
+					Point a = tmp;
+					a.y -= 1;
 					allp.push(a);
 				}
 			}
 		}
-		// заливка с затравкой.
+		
 		this->draw();
 	}
 }
-
 
 void Polygon::fillOnEdges(Line line_in, int flag){
 	Line line_inner = line_in;
@@ -374,6 +385,14 @@ void Polygon::fillOnEdges(Line line_in, int flag){
 	}	
 }
 
+int Polygon::intersect_ox(int x, Line poly){
+	if(x == poly.point_from.x)
+		return poly.point_from.y;
+	if(x == poly.point_to.x)
+		return poly.point_to.y;
+	return (int)(poly.point_to.y - poly.point_from.y)*(x - poly.point_from.x) / (poly.point_to.x - poly.point_from.x) + poly.point_from.y;
+}
+
 int Polygon::intersect(int y, Line poly){
 	if(y == poly.point_from.y)
 		return poly.point_from.x;
@@ -388,4 +407,12 @@ int Polygon::mid(){
 		sum += points[i].x;
 	}
 	return sum / points.size();
+}
+
+void Polygon::clear(){
+	for(int i=0; i<pMx; ++i){
+		for(int j=0; j<pMy; ++j){
+			pMatrix[i][j] = 0;
+		}
+	}
 }

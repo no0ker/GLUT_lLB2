@@ -27,6 +27,8 @@ private:
 	char pMatrix[pMx][pMy];
 	void fillOnEdges(Line, int);
 	int Polygon::intersect(int, Line);
+	int Polygon::intersect_ox(int, Line);
 	int mid();
+	void clear();
 };
 

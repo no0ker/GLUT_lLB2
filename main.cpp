@@ -58,7 +58,7 @@ void mouse(int button, int state, int ax, int ay){
 		tmp.x = ax;
 		tmp.y = window_height - ay;
 		++a;
-		parent->fill(3, tmp);
+		parent->fill(a, tmp);
 		if(a==3)
 			a=0;
 		display();
@@ -68,7 +68,7 @@ void mouse(int button, int state, int ax, int ay){
 int main(int argc, char *argv[]){
 	setlocale(LC_ALL, "Russian");
 	parent = new Polygon;
-	a=1;
+	a=0;
 	glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB);
     glutInitWindowSize(window_width, window_height);
