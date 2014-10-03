@@ -1,5 +1,7 @@
-#include <GL/glut.h>    /*Äëÿ Linux è Windows*/
+#include <GL/glut.h>    
  
+int eyeX;
+
 void reshape(int w, int h)
 {
         glViewport(0, 0, w, h);
@@ -8,16 +10,22 @@ void reshape(int w, int h)
         glLoadIdentity();
         //gluOrtho2D(0, w, 0, h);
 		gluPerspective(45, w/h, -50, 1000);
-		gluLookAt(0, 0, 1000,
-			0, 0, 0,
-			0, 10, 0);
 		
-		
-       
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
+
+		gluLookAt(eyeX, 0, 1000,
+			0, 0, 0,
+			0, 50, 0);
+		
 }
- 
+
+void init(){
+	eyeX = 0;
+
+
+}
+
 void display()
 {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -30,7 +38,7 @@ void display()
         glVertex3i(100, 0, 0);
         
 		glColor3f(0.0, 1.0, 0.0);
-        glVertex3i(100, 100, -300);
+        glVertex3i(100, 100, 300);
         
 		glColor3f(0, 0, 1.0);
         glVertex3i(0, 100, 0);
@@ -39,7 +47,24 @@ void display()
        
         glutSwapBuffers();
 }
- 
+
+void keyboard (unsigned char key, int x, int y) {
+	if (key == 97)
+		eyeX -= 50;
+	if (key == 100)
+		eyeX += 50;
+	
+
+	display();
+	glMatrixMode(GL_MODELVIEW);
+	
+	gluLookAt(eyeX, 0, 1000,
+			0, 0, 0,
+			0, 50, 0);
+	
+}
+
+
 int main (int argc, char * argv[])
 {
         glutInit(&argc, argv);
@@ -50,8 +75,9 @@ int main (int argc, char * argv[])
        
         glutReshapeFunc(reshape);
         glutDisplayFunc(display);
-       
-        glutMainLoop();
+        glutKeyboardFunc (keyboard); 
+        
+		glutMainLoop();
        
         return 0;
 }
