@@ -97,7 +97,6 @@ void display()
 
 		}
 		glEnd();
-
         glutSwapBuffers();
 }
 
@@ -129,6 +128,15 @@ void keyboard (unsigned char key, int x, int y) {
 	display();
 }
 
+void mouse(int button, int state, int ax, int ay){
+	if(button == GLUT_LEFT_BUTTON){
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glRotatef(15, 0, 1, 0);
+		display();
+		glPopMatrix();
+	}
+}
 
 int main (int argc, char * argv[])
 {
@@ -137,11 +145,13 @@ int main (int argc, char * argv[])
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
        
     glutInitWindowSize(200, 200);
+	glutInitWindowPosition(200,200);
     glutCreateWindow("OpenGL lesson 1");
        
     glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutKeyboardFunc (keyboard); 
+	glutMouseFunc(mouse);
         
 	glutMainLoop();
        
